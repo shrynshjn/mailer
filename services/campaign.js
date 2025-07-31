@@ -34,6 +34,7 @@ const getById = async (payload) => {
  * @returns {Promise<Object>} An object containing the success status, created data, and a message.
  */
 const create = async (payload) => {
+
   const { name, emailId, scheduledTime, emails } = payload;
   const campaignData = {
     name,

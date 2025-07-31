@@ -1,4 +1,5 @@
 const { model, Schema } = require("mongoose");
+const { CAMPAIGN_STATUS } = require("../config/constants");
 
 const schema = new Schema({
 	name: {
@@ -28,6 +29,11 @@ const schema = new Schema({
 			accepted: Boolean,
     },
   ],
+  status: {
+    type: String,
+    enum: Object.values(CAMPAIGN_STATUS),
+    default: CAMPAIGN_STATUS.PENDING,
+  },
 
 });
 

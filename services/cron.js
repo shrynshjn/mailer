@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const Campaign = require("../models/campaign");
+const { CAMPAIGN_STATUS } = require("../config/constants");
 const MailerService = require("./mailer");
 
 // In-memory store for scheduled jobs. Key: campaignId, Value: cron job instance
@@ -12,6 +13,11 @@ const scheduledJobs = {};
 const executeCampaign = async (campaignId) => {
   console.log(`Executing campaign: ${campaignId}`);
   try {
+    // Set status to in-progress
+    await Campaign.findByIdAndUpdate(campaignId, {
+      status: CAMPAIGN_STATUS.IN_PROGRESS,
+    });
+
     // Use the model directly to avoid circular dependencies with CampaignService
     const campaign = await Campaign.findById(campaignId).populate("emailId");
 
@@ -19,6 +25,9 @@ const executeCampaign = async (campaignId) => {
       console.error(
         `Campaign or associated email not found for ID: ${campaignId}`
       );
+      await Campaign.findByIdAndUpdate(campaignId, {
+        status: CAMPAIGN_STATUS.FAILED,
+      });
       unscheduleCampaign(campaignId); // Clean up the job
       return;
     }
@@ -70,10 +79,17 @@ const executeCampaign = async (campaignId) => {
     console.log(
       `Campaign ${campaignId} executed for ${toSend.length} recipients.`
     );
+    // Set status to completed
+    await Campaign.findByIdAndUpdate(campaignId, {
+      status: CAMPAIGN_STATUS.COMPLETED,
+    });
     // Once all are processed, unschedule to prevent re-running
     unscheduleCampaign(campaignId);
   } catch (error) {
     console.error(`Error executing campaign ${campaignId}:`, error);
+    await Campaign.findByIdAndUpdate(campaignId, {
+      status: CAMPAIGN_STATUS.FAILED,
+    });
   }
 };
 
@@ -96,8 +112,16 @@ const dateToCron = (date) => {
  * Schedules a cron job for a given campaign.
  * @param {Object} campaign - The campaign object from Mongoose.
  */
-const scheduleCampaign = (campaign) => {
-  if (!campaign || !campaign.scheduledTime || new Date(campaign.scheduledTime) < new Date()) {
+const scheduleCampaign = async (campaign) => {
+  if (
+    !campaign ||
+    !campaign.scheduledTime ||
+    new Date(campaign.scheduledTime) < new Date()
+  ) {
+    // If time is removed or in the past, ensure status is pending
+    if (campaign && campaign.status === CAMPAIGN_STATUS.SCHEDULED) {
+      await Campaign.findByIdAndUpdate(campaign._id, { status: CAMPAIGN_STATUS.PENDING });
+    }
     return;
   }
 
@@ -111,6 +135,11 @@ const scheduleCampaign = (campaign) => {
       console.error(`Invalid cron time for campaign ${campaign._id}. Skipping.`);
       return;
   }
+
+  // Update status to scheduled in the database
+  await Campaign.findByIdAndUpdate(campaign._id, {
+    status: CAMPAIGN_STATUS.SCHEDULED,
+  });
 
   const job = cron.schedule(cronTime, () => executeCampaign(campaign._id.toString()));
   scheduledJobs[campaign._id.toString()] = job;
@@ -135,15 +164,16 @@ const unscheduleCampaign = (campaignId) => {
  */
 const initializeJobs = async () => {
   console.log("Initializing cron jobs for pending campaigns...");
-  const campaigns = await Campaign.find({ scheduledTime: { $ne: null, $gt: new Date() } });
+  const campaigns = await Campaign.find({
+    scheduledTime: { $ne: null, $gt: new Date() },
+    status: { $in: [CAMPAIGN_STATUS.PENDING, CAMPAIGN_STATUS.SCHEDULED] },
+  });
   campaigns.forEach(scheduleCampaign);
   console.log(`${campaigns.length} pending campaigns scheduled.`);
 };
 
-const CronService = {
+module.exports = {
   scheduleCampaign,
   unscheduleCampaign,
   initializeJobs,
 };
-
-module.exports = CronService;

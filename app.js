@@ -1,4 +1,4 @@
-require('dotenv').config();
+const connectDB = require('./db');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -10,6 +10,9 @@ var usersRouter = require('./routes/users');
 const emailRouter = require('./routes/emails');
 const campaignRouter = require('./routes/campaigns');
 const CronService = require('./services/cron');
+
+// Connect to Database
+connectDB();
 
 var app = express();
 
