@@ -18,10 +18,15 @@ const schema = new Schema({
     type: Array,
     default: [],
   },
-  sent: {
-    type: Array,
-    default: [],
-  },
+  sent: [
+    {
+      email: String,
+      success: Boolean,
+      messageId: String,
+      response: String,
+      error: String,
+    },
+  ],
 
 });
 

@@ -1,14 +1,15 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const emailRouter = require('./routes/emails');
 const campaignRouter = require('./routes/campaigns');
+const CronService = require('./services/cron');
 
 var app = express();
 
@@ -27,6 +28,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/emails', emailRouter);
 app.use('/campaigns', campaignRouter);
+
+// Initialize cron jobs for pending campaigns on startup
+CronService.initializeJobs();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

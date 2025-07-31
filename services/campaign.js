@@ -1,4 +1,5 @@
 const Campaign = require("../models/campaign");
+const CronService = require("./cron");
 
 /**
  * Gets all campaigns.
@@ -41,6 +42,7 @@ const create = async (payload) => {
     emails,
   };
   const campaign = await Campaign.create(campaignData);
+  CronService.scheduleCampaign(campaign);
   return {
     success: true,
     data: { campaign },
@@ -65,6 +67,8 @@ const update = async (payload) => {
     return { success: false, message: "Campaign not found" };
   }
 
+  CronService.scheduleCampaign(campaign);
+
   return {
     success: true,
     data: { campaign },
@@ -83,13 +87,19 @@ const remove = async (payload) => {
   if (!campaign) {
     return { success: false, message: "Campaign not found" };
   }
-  return { success: true, message: "Campaign deleted successfully" };
+  CronService.unscheduleCampaign(payload.campaignId);
+  return {
+    success: true,
+    data: { campaign },
+    message: "Campaign deleted successfully",
+  };
 };
 
-module.exports = {
+const CampaignService = {
   getAll,
   getById,
   create,
   update,
   remove,
 };
+module.exports = CampaignService;
