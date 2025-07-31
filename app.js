@@ -29,6 +29,10 @@ app.engine('hbs', engine({
       return new Date(date).toLocaleString();
     },
     eq: (a, b) => a === b,
+    countSuccess: (sentArray) => {
+      if (!sentArray || !Array.isArray(sentArray)) return 0;
+      return sentArray.filter(s => s.success).length;
+    }
   }
 }));
 app.set('view engine', 'hbs');

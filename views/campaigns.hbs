@@ -1,4 +1,8 @@
 <h1>{{title}}</h1>
+<div class="d-flex mb-3">
+    <a href="/campaigns/add" class="btn btn-success">Add New Campaign</a>
+    <button id="refresh-campaigns" class="btn btn-info ms-2">Refresh Data</button>
+</div>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -7,17 +11,17 @@
                 <th>Status</th>
                 <th>Scheduled Time</th>
                 <th>Recipients</th>
-                <th>Sent</th>
+                <th>Sent / Success</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="campaigns-table-body">
             {{#each campaigns}}
             <tr>
                 <td>{{this.name}}</td>
                 <td><span class="badge bg-primary status-badge">{{this.status}}</span></td>
                 <td>{{#if this.scheduledTime}}{{formatDate this.scheduledTime}}{{else}}Not Scheduled{{/if}}</td>
                 <td>{{this.emails.length}}</td>
-                <td>{{this.sent.length}}</td>
+                <td>{{this.sent.length}} / {{countSuccess this.sent}}</td>
             </tr>
             {{else}}
             <tr>
@@ -27,3 +31,61 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const refreshButton = document.getElementById('refresh-campaigns');
+        const tableBody = document.getElementById('campaigns-table-body');
+
+        // Helper function to format date, mimicking server-side helper
+        function formatDate(dateString) {
+            if (!dateString) return 'Not Scheduled';
+            return new Date(dateString).toLocaleString();
+        }
+
+        // Helper function to count successes, mimicking server-side helper
+        function countSuccess(sentArray) {
+            if (!sentArray || !Array.isArray(sentArray)) return 0;
+            return sentArray.filter(s => s.success).length;
+        }
+
+        function renderCampaigns(campaigns) {
+            // Clear existing table rows
+            tableBody.innerHTML = '';
+
+            if (!campaigns || campaigns.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No campaigns found.</td></tr>';
+                return;
+            }
+
+            campaigns.forEach(campaign => {
+                const row = `
+                    <tr>
+                        <td>${campaign.name}</td>
+                        <td><span class="badge bg-primary status-badge">${campaign.status}</span></td>
+                        <td>${formatDate(campaign.scheduledTime)}</td>
+                        <td>${campaign.emails.length}</td>
+                        <td>${campaign.sent.length} / ${countSuccess(campaign.sent)}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        refreshButton.addEventListener('click', async () => {
+            refreshButton.disabled = true;
+            refreshButton.textContent = 'Refreshing...';
+            try {
+                const response = await fetch('/api/campaigns');
+                const result = await response.json();
+                renderCampaigns(result.data.campaigns);
+            } catch (error) {
+                console.error('Error refreshing campaigns:', error);
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Error loading campaigns.</td></tr>';
+            } finally {
+                refreshButton.disabled = false;
+                refreshButton.textContent = 'Refresh Data';
+            }
+        });
+    });
+</script>

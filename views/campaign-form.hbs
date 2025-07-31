@@ -1,0 +1,31 @@
+<h1>{{title}}</h1>
+<form action="{{action}}" method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">Campaign Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{campaign.name}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="emailId" class="form-label">Email Template</label>
+        <select class="form-select" id="emailId" name="emailId" required>
+            <option value="" disabled selected>Select a template</option>
+            {{#each emails}}
+            <option value="{{this._id}}">{{this.name}} - ({{this.title}})</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="emails" class="form-label">Recipient Emails</label>
+        <textarea class="form-control" id="emails" name="emails" rows="10" placeholder="Enter one email address per line"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="scheduledTime" class="form-label">Scheduled Time</label>
+        <input type="datetime-local" class="form-control" id="scheduledTime" name="scheduledTime" required>
+        <div class="form-text">The campaign will be sent at this time.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Campaign</button>
+    <a href="/campaigns" class="btn btn-secondary">Cancel</a>
+</form>

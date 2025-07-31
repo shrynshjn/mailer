@@ -25,6 +25,41 @@ router.get('/campaigns', async (req, res, next) => {
 });
 
 /**
+ * @route   GET /campaigns/add
+ * @desc    Render the form to create a new campaign
+ */
+router.get('/campaigns/add', async (req, res, next) => {
+  try {
+    const { data } = await EmailService.getAll();
+    res.render('campaign-form', {
+      title: 'Create Campaign',
+      action: '/campaigns/add',
+      emails: data.emails,
+      campaign: {}
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route   POST /campaigns/add
+ * @desc    Handle the creation of a new campaign from form
+ */
+router.post('/campaigns/add', async (req, res, next) => {
+  try {
+    const { name, emailId, scheduledTime, emails } = req.body;
+    // Split emails from textarea into an array, trim whitespace, and filter out empty lines
+    const emailList = emails.split(/\r?\n/).map(email => email.trim()).filter(email => email);
+
+    await CampaignService.create({ name, emailId, scheduledTime, emails: emailList });
+    res.redirect('/campaigns');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * @route   GET /emails
  * @desc    Render the list of email templates
  */

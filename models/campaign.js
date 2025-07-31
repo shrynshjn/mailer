@@ -4,7 +4,8 @@ const { CAMPAIGN_STATUS } = require("../config/constants");
 const schema = new Schema({
 	name: {
 		type: String,
-		default: ''
+		required: true,
+		trim: true,
 	},
   emailId: {
     type: Schema.Types.ObjectId,
@@ -13,7 +14,7 @@ const schema = new Schema({
   },
 	scheduledTime: {
 		type: Date,
-		default: null,
+		required: true,
 	},
   emails: {
     type: Array,

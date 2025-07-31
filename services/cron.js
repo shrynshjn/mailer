@@ -19,7 +19,11 @@ const executeCampaign = async (campaignId) => {
     });
 
     // Use the model directly to avoid circular dependencies with CampaignService
-    const campaign = await Campaign.findById(campaignId).populate("emailId");
+    const campaign = await Campaign.findById(campaignId).populate("emailId", {
+      title: 1,
+      content: 1,
+      attachments: 1,
+    }, 'email');
 
     if (!campaign || !campaign.emailId) {
       console.error(
@@ -33,6 +37,7 @@ const executeCampaign = async (campaignId) => {
     }
 
     const { title, content, attachments } = campaign.emailId;
+    console.log(campaign.emailId);
     const recipients = campaign.emails || [];
     const alreadySentEmails = (campaign.sent || []).map((s) => s.email);
     const toSend = recipients.filter((r) => !alreadySentEmails.includes(r));
