@@ -25,6 +25,7 @@ const schema = new Schema({
       messageId: String,
       response: String,
       error: String,
+			accepted: Boolean,
     },
   ],
 

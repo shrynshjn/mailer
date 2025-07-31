@@ -48,6 +48,7 @@ const executeCampaign = async (campaignId) => {
           success: true,
           messageId: mailResponse.messageId,
           response: mailResponse.response,
+					accepted: mailResponse.accepted.includes(recipient),
         };
       } catch (emailError) {
         console.error(

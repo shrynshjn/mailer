@@ -2,12 +2,12 @@ const nodemailer = require("nodemailer");
 
 // It's best practice to use environment variables for sensitive data
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === "true", // true for 465, false for other ports
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // use false for STARTTLS; true for SSL on port 465
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.GMAIL_ID,
+    pass: process.env.GMAIL_APP_PASSWD,
   },
 });
 
@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
  */
 const sendMail = async ({ to, subject, html, attachments = [] }) => {
   const info = await transporter.sendMail({
-    from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+    from: `"${process.env.SENDER_NAME}" <${process.env.GMAIL_ID}>`,
     to,
     subject,
     html,
@@ -32,7 +32,7 @@ const sendMail = async ({ to, subject, html, attachments = [] }) => {
 };
 
 const MailerService = {
-	sendMail,
+  sendMail,
 };
 
 module.exports = MailerService;
