@@ -30,12 +30,16 @@ router.get('/campaigns', async (req, res, next) => {
  */
 router.get('/campaigns/add', async (req, res, next) => {
   try {
-    const { data } = await EmailService.getAll();
+    const [emailsResponse, campaignsResponse] = await Promise.all([
+      EmailService.getAll(),
+      CampaignService.getAll()
+    ]);
     res.render('campaign-form', {
       title: 'Create Campaign',
       action: '/campaigns/add',
-      emails: data.emails,
-      campaign: {}
+      emails: emailsResponse.data.emails,
+      campaigns: campaignsResponse.data.campaigns,
+      campaign: {},
     });
   } catch (error) {
     next(error);

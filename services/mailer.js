@@ -20,8 +20,7 @@ const transporter = nodemailer.createTransport({
  * @param {Array} [mailOptions.attachments=[]] - Email attachments.
  * @returns {Promise<Object>} The response object from nodemailer.
  */
-const sendMail = async (details = { to, subject, html, attachments: [] }) => {
-  const {to, subject, html, attachments} = details;
+const sendMail = async ({ to, subject, html, attachments = [] }) => {
   const info = await transporter.sendMail({
     from: `"${process.env.SENDER_NAME}" <${process.env.GMAIL_ID}>`,
     to,

@@ -16,6 +16,16 @@
     </div>
 
     <div class="mb-3">
+        <label for="previousCampaign" class="form-label">Load Emails from Previous Campaign (Optional)</label>
+        <select class="form-select" id="previousCampaign">
+            <option value="" selected>Select a previous campaign...</option>
+            {{#each campaigns}}
+            <option value="{{this._id}}">{{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="mb-3">
         <label for="emails" class="form-label">Recipient Emails</label>
         <textarea class="form-control" id="emails" name="emails" rows="10" placeholder="Enter one email address per line"></textarea>
     </div>
@@ -29,3 +39,26 @@
     <button type="submit" class="btn btn-primary">Create Campaign</button>
     <a href="/campaigns" class="btn btn-secondary">Cancel</a>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Use {{{json}}} helper to safely embed data
+        const campaignsData = {{{json campaigns}}};
+        const previousCampaignSelect = document.getElementById('previousCampaign');
+        const emailsTextarea = document.getElementById('emails');
+
+        previousCampaignSelect.addEventListener('change', (event) => {
+            const selectedCampaignId = event.target.value;
+            if (!selectedCampaignId) {
+                emailsTextarea.value = '';
+                return;
+            }
+
+            const selectedCampaign = campaignsData.find(c => c._id === selectedCampaignId);
+            if (selectedCampaign && selectedCampaign.emails) {
+                // Join with newline character to populate textarea
+                emailsTextarea.value = selectedCampaign.emails.join('\n');
+            }
+        });
+    });
+</script>

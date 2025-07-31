@@ -32,6 +32,9 @@ app.engine('hbs', engine({
     countSuccess: (sentArray) => {
       if (!sentArray || !Array.isArray(sentArray)) return 0;
       return sentArray.filter(s => s.success).length;
+    },
+    json: (context) => {
+      return JSON.stringify(context);
     }
   }
 }));
