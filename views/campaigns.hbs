@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Scheduled Time</th>
+                <th>Recipients</th>
+                <th>Sent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each campaigns}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td><span class="badge bg-primary status-badge">{{this.status}}</span></td>
+                <td>{{#if this.scheduledTime}}{{formatDate this.scheduledTime}}{{else}}Not Scheduled{{/if}}</td>
+                <td>{{this.emails.length}}</td>
+                <td>{{this.sent.length}}</td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">No campaigns found.</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,338 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+		"name": "Mailer API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "API for managing email templates and campaigns."
+	},
+	"item": [
+		{
+			"name": "Emails",
+			"description": "Routes for managing email templates.",
+			"item": [
+				{
+					"name": "Get All Emails",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/emails",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// This script runs after the request is sent.",
+									"// It captures the ID of the newly created email and saves it as a collection variable.",
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response && response.data && response.data.email && response.data.email._id) {",
+									"        pm.collectionVariables.set(\"emailId\", response.data.email._id);",
+									"        console.log(\"Set collection variable 'emailId' to: \" + response.data.email._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Welcome Email Template\",\n    \"title\": \"Welcome to Our Service!\",\n    \"content\": \"<h1>Hello!</h1><p>Thank you for signing up.</p>\",\n    \"attachments\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/emails",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Email by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/emails/{{emailId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"emails",
+								"{{emailId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"A Warm Welcome to Our Service!\",\n    \"content\": \"<h1>Hello there!</h1><p>We are so glad you joined us.</p>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/emails/{{emailId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"emails",
+								"{{emailId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Email",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/emails/{{emailId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"emails",
+								"{{emailId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Campaigns",
+			"description": "Routes for managing email campaigns.",
+			"item": [
+				{
+					"name": "Get All Campaigns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/campaigns",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"campaigns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Campaign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// This script runs after the request is sent.",
+									"// It captures the ID of the newly created campaign and saves it as a collection variable.",
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response && response.data && response.data.campaign && response.data.campaign._id) {",
+									"        pm.collectionVariables.set(\"campaignId\", response.data.campaign._id);",
+									"        console.log(\"Set collection variable 'campaignId' to: \" + response.data.campaign._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Q1 Welcome Campaign\",\n    \"emailId\": \"{{emailId}}\",\n    \"scheduledTime\": \"2025-01-15T10:00:00.000Z\",\n    \"emails\": [\n        \"test1@example.com\",\n        \"test2@example.com\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/campaigns",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"campaigns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaign by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/campaigns/{{campaignId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"{{campaignId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Campaign",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Q1 Welcome Campaign\",\n    \"emails\": [\n        \"test1@example.com\",\n        \"test2@example.com\",\n        \"new-user@example.com\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/campaigns/{{campaignId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"{{campaignId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Campaign",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/campaigns/{{campaignId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"{{campaignId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "View Home Page",
+			"description": "This route now renders the HTML home page.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "The base URL for the API server."
+		},
+		{
+			"key": "emailId",
+			"value": "",
+			"type": "string",
+			"description": "Holds the ID of a created email template for subsequent requests."
+		},
+		{
+			"key": "campaignId",
+			"value": "",
+			"type": "string",
+			"description": "Holds the ID of a created campaign for subsequent requests."
+		}
+	]
+}

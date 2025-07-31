@@ -6,7 +6,7 @@ const CronService = require("./cron");
  * @returns {Promise<Object>} An object containing the success status, data, and a message.
  */
 const getAll = async () => {
-  const campaigns = await Campaign.find({}).populate('emailId');
+  const campaigns = await Campaign.find({}).populate('emailId').lean();
   return { success: true, data: { campaigns }, message: "Campaigns list" };
 };
 
@@ -17,7 +17,7 @@ const getAll = async () => {
  * @returns {Promise<Object>} An object containing the success status, data (if found), and a message.
  */
 const getById = async (payload) => {
-  const campaign = await Campaign.findById(payload.campaignId).populate('emailId');
+  const campaign = await Campaign.findById(payload.campaignId).populate('emailId').lean();
   if (!campaign) {
     return { success: false, message: "Campaign not found" };
   }

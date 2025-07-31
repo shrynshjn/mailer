@@ -1,0 +1,18 @@
+<h1>{{title}}</h1>
+<form action="{{action}}" method="POST">
+    <div class="mb-3">
+        <label for="name" class="form-label">Template Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{email.name}}" required>
+        <div class="form-text">A friendly name for you to identify this template.</div>
+    </div>
+    <div class="mb-3">
+        <label for="title" class="form-label">Email Title/Subject</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{email.title}}" required>
+    </div>
+    <div class="mb-3">
+        <label for="content" class="form-label">Email Content (HTML)</label>
+        <textarea class="form-control" id="content" name="content" rows="10" required>{{email.content}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Template</button>
+    <a href="/emails" class="btn btn-secondary">Cancel</a>
+</form>

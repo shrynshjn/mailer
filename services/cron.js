@@ -39,6 +39,9 @@ const executeCampaign = async (campaignId) => {
 
     if (toSend.length === 0) {
       console.log(`No new recipients for campaign ${campaignId}.`);
+      await Campaign.findByIdAndUpdate(campaignId, {
+        status: CAMPAIGN_STATUS.COMPLETED,
+      });
       unscheduleCampaign(campaignId);
       return;
     }

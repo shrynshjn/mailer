@@ -5,7 +5,7 @@ const Email = require("../models/email");
  * @returns {Promise<Object>} An object containing the success status, data, and a message.
  */
 const getAll = async () => {
-  const emails = await Email.find({});
+  const emails = await Email.find({}).lean();
   return { success: true, data: { emails }, message: "Emails list" };
 };
 
@@ -16,7 +16,7 @@ const getAll = async () => {
  * @returns {Promise<Object>} An object containing the success status, data (if found), and a message.
  */
 const getById = async (payload) => {
-  const email = await Email.findById(payload.emailId);
+  const email = await Email.findById(payload.emailId).lean();
   if (!email) {
     return { success: false, message: "Email not found" };
   }

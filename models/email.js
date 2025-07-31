@@ -3,15 +3,17 @@ const {model, Schema} = require('mongoose');
 const schema = new Schema({
 	name: {
 		type: String,
-		default: ''
+		required: true,
+		trim: true,
 	},
 	title: {
 		type: String,
-		default: ''
+		required: true,
+		trim: true,
 	},
 	content: {
 		type: String,
-		default: ''
+		required: true,
 	},
 	attachments: {
 		type: Array,

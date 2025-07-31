@@ -1,11 +1,14 @@
-const connectDB = require('./db');
+
+const connectDB = require("./config/db");
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-var indexRouter = require('./routes/index');
+const { engine } = require('express-handlebars');
+
+const viewRouter = require('./routes/views');
 var usersRouter = require('./routes/users');
 const emailRouter = require('./routes/emails');
 const campaignRouter = require('./routes/campaigns');
@@ -16,9 +19,20 @@ connectDB();
 
 var app = express();
 
-// view engine setup
+// Handlebars View Engine Setup
+app.engine('hbs', engine({
+  extname: '.hbs',
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views'),
+  helpers: {
+    formatDate: (date) => {
+      return new Date(date).toLocaleString();
+    },
+    eq: (a, b) => a === b,
+  }
+}));
+app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(cors());
@@ -27,10 +41,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/emails', emailRouter);
-app.use('/campaigns', campaignRouter);
+// View Routes
+app.use('/', viewRouter);
+
+// API Routes
+app.use('/api/users', usersRouter);
+app.use('/api/emails', emailRouter);
+app.use('/api/campaigns', campaignRouter);
 
 // Initialize cron jobs for pending campaigns on startup
 CronService.initializeJobs();
